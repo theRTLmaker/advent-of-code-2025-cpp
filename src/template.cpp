@@ -14,8 +14,7 @@ static std::string day_input_path(int argc, char **argv) {
 }
 
 long long solve_part1(const std::vector<std::string> &lines) {
-    // TODO: your logic here
-    long long acc = 0;
+    long long acc{0};
     for (const auto &line : lines) {
         // dummy logic as placeholder
         acc += static_cast<long long>(line.size());
@@ -24,8 +23,7 @@ long long solve_part1(const std::vector<std::string> &lines) {
 }
 
 long long solve_part2(const std::vector<std::string> &lines) {
-    // TODO: your logic here
-    long long acc = 0;
+    long long acc{0};
     for (const auto &line : lines) {
         acc += static_cast<long long>(line.size()) * 2;
     }
