@@ -43,4 +43,4 @@ function(add_day day)
     )
 endfunction()
 
-add_day(02)
+add_day(04)
