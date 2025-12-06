@@ -10,7 +10,7 @@ static std::string day_input_path(int argc, char **argv) {
     if (argc > 1) {
         return argv[1];  // allow custom path
     }
-    return "../input/dayXX.txt";
+    return "../input/day07.txt";
 }
 
 long long solve_part1(const std::vector<std::string> &lines) {

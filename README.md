@@ -17,11 +17,12 @@ Tackling the 2025 Advent of Code puzzles as daily algorithm katas. The goal is t
 ## Progress & Gotchas
 | Day | Puzzle Focus | Key Gotcha / Insight |
 | --- | --- | --- |
-| 01 | Dial rotations and wrap-around counters | Treat movements modulo 100 and detect zero crossings even when deltas skip past the origin. |
-| 02 | Range parsing and pattern detection | `std::from_chars` keeps parsing zero-cost; vet simple digit heuristics before heavier divisibility checks. |
-| 03 | Maximizing numeric scores from digit banks | Pull digits greedily while maintaining iterator state instead of sorting copies of the bank. |
-| 04 | Grid stability checks | Snapshot candidate cells each iteration so removals don’t interfere with the current pass. |
-| 05 | ID range membership | Merge overlapping ranges before counting to prevent double counting and cut complexity. |
+| 1 | Dial rotations and wrap-around counters | Treat movements modulo 100 and detect zero crossings even when deltas skip past the origin. |
+| 2 | Range parsing and pattern detection | `std::from_chars` keeps parsing zero-cost; vet simple digit heuristics before heavier divisibility checks. |
+| 3 | Maximizing numeric scores from digit banks | Pull digits greedily while maintaining iterator state instead of sorting copies of the bank. |
+| 4 | Grid stability checks | Snapshot candidate cells each iteration so removals don’t interfere with the current pass. |
+| 5 | ID range membership | Merge overlapping ranges before counting to prevent double counting and cut complexity. |
+| 6 | Funny number parsing | Store numbers as string so they keep the relative positioning |
 
 ## Build & Run
 Prerequisites: CMake ≥ 3.16 and a C++23 compiler (tested with both Clang and GCC).
