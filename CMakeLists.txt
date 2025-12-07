@@ -37,6 +37,8 @@ function(add_day day)
         PRIVATE aoc_common      # brings in include/ and flags
     )
 
+    target_compile_options(day${day} PRIVATE -O3)
+
     # For IDEs (Xcode/MSVC); harmless elsewhere
     set_target_properties(day${day} PROPERTIES
         VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
