@@ -7,6 +7,7 @@
 #include <ranges>
 #include <charconv>
 #include <algorithm>
+#include <cassert>
 
 using namespace aoc;
 
@@ -155,10 +156,28 @@ constexpr bool horizontal_edge_crosses_interior(const Coord& e1,
     return y_inside && x_overlap;
 }
 
+struct Edge { Coord a, b; bool vertical; };
+
+[[nodiscard]]
+constexpr bool is_axis_aligned(const Coord& a, const Coord& b) noexcept {
+    return (a.x == b.x) || (a.y == b.y);
+}
 
 long long solve_part2(const std::vector<std::string> &lines) {
     const Coords coords = parse_input(lines);
     const size_t n = coords.size();
+
+
+    std::vector<Edge> edges;
+    edges.reserve(n);
+    for (std::size_t e = 0; e < n; ++e) {
+        const auto& a = coords[e];
+        const auto& b = coords[(e + 1) % n];
+
+        assert (is_axis_aligned(a, b));
+        // verify axis-aligned and push
+        edges.emplace_back(Edge{a, b, a.x == b.x});
+    }
 
     long long biggest_area{0};
 
@@ -176,27 +195,20 @@ long long solve_part2(const std::vector<std::string> &lines) {
                 bool valid_area{true};
 
                 const Rect rect = make_rect(coord1, coord2);
-                for (size_t edge{0}; edge < n; ++edge) {
-                    const auto &e_coord1 = coords[edge];
-                    const auto &e_coord2 = coords[(edge + 1) % n];
+                for (const auto &edge : edges) {
                     // Vertical edge
-                    if (e_coord1.x == e_coord2.x) {
-                        if (vertical_edge_crosses_interior(e_coord1, e_coord2, rect)) {
+                    if (edge.vertical) {
+                        if (vertical_edge_crosses_interior(edge.a, edge.b, rect)) {
                             valid_area = false;
                             // std::cout << "not valid" << std::endl;
                         }
                     }
                     // Horizontal edge
-                    else if (e_coord1.y == e_coord2.y) {
-                        if (horizontal_edge_crosses_interior(e_coord1, e_coord2, rect)) {
+                    else {
+                        if (horizontal_edge_crosses_interior(edge.a, edge.b, rect)) {
                             valid_area = false;
                             // std::cout << "not valid" << std::endl;
                         }
-                    }
-                    // Diagonal edge - invalid
-                    else {
-                        std::cout << "WRONG EDGE: (" << e_coord1.x << "," << e_coord1.y << ") to (" << e_coord2.x << "," << e_coord2.y << std::endl;
-                        throw std::runtime_error("Invalid edge");
                     }
                 }
 
