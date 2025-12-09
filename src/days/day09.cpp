@@ -108,41 +108,87 @@ long long solve_part1(const std::vector<std::string> &lines) {
     return biggest_area;
 }
 
+struct Rect {
+    unsigned min_x;
+    unsigned max_x;
+    unsigned min_y;
+    unsigned max_y;
+};
+
+[[nodiscard]]
+constexpr Rect make_rect(const Coord& a, const Coord& b) noexcept {
+    return {
+        .min_x = std::min(a.x, b.x),
+        .max_x = std::max(a.x, b.x),
+        .min_y = std::min(a.y, b.y),
+        .max_y = std::max(a.y, b.y),
+    };
+}
+
+[[nodiscard]]
+constexpr bool vertical_edge_crosses_interior(const Coord& e1,
+                                              const Coord& e2,
+                                              const Rect& r) noexcept
+{
+    // assume e1.x == e2.x
+    const auto x = e1.x;
+    const auto e_min_y = std::min(e1.y, e2.y);
+    const auto e_max_y = std::max(e1.y, e2.y);
+
+    const bool x_inside  = (r.min_x < x && x < r.max_x);
+    const bool y_overlap = !(e_max_y <= r.min_y || e_min_y >= r.max_y);
+    return x_inside && y_overlap;
+}
+
+[[nodiscard]]
+constexpr bool horizontal_edge_crosses_interior(const Coord& e1,
+                                                const Coord& e2,
+                                                const Rect& r) noexcept
+{
+    // assume e1.y == e2.y
+    const auto y = e1.y;
+    const auto e_min_x = std::min(e1.x, e2.x);
+    const auto e_max_x = std::max(e1.x, e2.x);
+
+    const bool y_inside  = (r.min_y < y && y < r.max_y);
+    const bool x_overlap = !(e_max_x <= r.min_x || e_min_x >= r.max_x);
+    return y_inside && x_overlap;
+}
+
+
 long long solve_part2(const std::vector<std::string> &lines) {
-    Coords coords = parse_input(lines);
+    const Coords coords = parse_input(lines);
+    const size_t n = coords.size();
 
     long long biggest_area{0};
-    for (size_t c1{0}; c1 < coords.size(); ++c1) {
-        for (size_t c2{c1}; c2 < coords.size(); ++c2) {
-            long long area = coords[c1].area(coords[c2]);
+
+    for (size_t c1{0}; c1 < n; ++c1) {
+        const auto &coord1 = coords[c1];
+
+        for (size_t c2{c1}; c2 < n; ++c2) {
+            const auto &coord2 = coords[c2];
+
+            const long long area = coord1.area(coord2);
             // If the new pair creates an area bigger than the biggest
             // Check if there's no coord that lives inside that reg
             if (area > biggest_area) {
-                // std::cout << "TESTING: (" << coords[c1].x << "," << coords[c1].y << ")x(" << coords[c2].x << "," << coords[c2].y << ")=" << area << std::endl;
+                // std::cout << "TESTING: (" << coord1.x << "," << coord1.y << ")x(" << coord2.x << "," << coord2.y << ")=" << area << std::endl;
                 bool valid_area{true};
-                unsigned max_x = std::max(coords[c1].x, coords[c2].x);
-                unsigned min_x = std::min(coords[c1].x, coords[c2].x);
-                unsigned max_y = std::max(coords[c1].y, coords[c2].y);
-                unsigned min_y = std::min(coords[c1].y, coords[c2].y);
-                for (size_t edge{0}; edge < coords.size(); ++edge) {
-                    const Coord e_coord1 = coords[edge];
-                    const Coord e_coord2 = coords[(edge + 1) % coords.size()];
-                    unsigned e_max_x = std::max(e_coord1.x, e_coord2.x);
-                    unsigned e_min_x = std::min(e_coord1.x, e_coord2.x);
-                    unsigned e_max_y = std::max(e_coord1.y, e_coord2.y);
-                    unsigned e_min_y = std::min(e_coord1.y, e_coord2.y);
+
+                const Rect rect = make_rect(coord1, coord2);
+                for (size_t edge{0}; edge < n; ++edge) {
+                    const auto &e_coord1 = coords[edge];
+                    const auto &e_coord2 = coords[(edge + 1) % n];
                     // Vertical edge
                     if (e_coord1.x == e_coord2.x) {
-                        if ((min_x < e_max_x && e_max_x < max_x) &&
-                            !(e_max_y <= min_y || e_min_y >= max_y)) {
+                        if (vertical_edge_crosses_interior(e_coord1, e_coord2, rect)) {
                             valid_area = false;
                             // std::cout << "not valid" << std::endl;
                         }
                     }
                     // Horizontal edge
                     else if (e_coord1.y == e_coord2.y) {
-                        if ((min_y < e_max_y && e_max_y < max_y) &&
-                            !(e_max_x <= min_x || e_min_x >= max_x)) {
+                        if (horizontal_edge_crosses_interior(e_coord1, e_coord2, rect)) {
                             valid_area = false;
                             // std::cout << "not valid" << std::endl;
                         }
@@ -156,7 +202,7 @@ long long solve_part2(const std::vector<std::string> &lines) {
 
                 if (valid_area) {
                     biggest_area = std::max(area, biggest_area);
-                    // std::cout << "(" << coords[c1].x << "," << coords[c1].y << ")x(" << coords[c2].x << "," << coords[c2].y << ")=" << area << std::endl;
+                    // std::cout << "(" << coord1.x << "," << coord1.y << ")x(" << coord2.x << "," << coord2.y << ")=" << area << std::endl;
                 }
             }
         }
