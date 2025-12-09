@@ -45,4 +45,4 @@ function(add_day day)
     )
 endfunction()
 
-add_day(07)
+add_day(08)

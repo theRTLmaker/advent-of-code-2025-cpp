@@ -24,6 +24,7 @@ Tackling the 2025 Advent of Code puzzles as daily algorithm katas. The goal is t
 | 5 | ID range membership | Merge overlapping ranges before counting to prevent double counting and cut complexity. |
 | 6 | Funny number parsing | Store numbers as string so they keep the relative positioning |
 | 7 | Memoize | Finally something that needs a cache to be solved |
+| 8 |  |  |
 
 ## Build & Run
 Prerequisites: CMake ≥ 3.16 and a C++23 compiler (tested with both Clang and GCC).
