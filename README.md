@@ -26,6 +26,8 @@ Tackling the 2025 Advent of Code puzzles as daily algorithm katas. The goal is t
 | 7 | Memoize | Finally something that needs a cache to be solved |
 | 8 | Create Sets | How to play with disjoint sets |
 | 9 | Polygones | How to check if a coordinate is inside a polygon - check the edges |
+| 10 | Just use a math solver | I could brute force part 1, but this is a just a linear equation |
+| 11 | Find all the ways | Nothing like memoizing to get away with it (not that fun in cpp) |
 
 ## Build & Run
 Prerequisites: CMake ≥ 3.16 and a C++23 compiler (tested with both Clang and GCC).

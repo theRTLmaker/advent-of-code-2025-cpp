@@ -283,7 +283,7 @@ long long solve_part1(const std::vector<std::string> &lines) {
         }
 
         Row row = parse_line(line);
-        std::cout << row << "\n";
+        // std::cout << row << "\n";
 
         const auto& groups  = row.groups;
         const auto& pattern = row.pattern;
@@ -291,9 +291,9 @@ long long solve_part1(const std::vector<std::string> &lines) {
         int best = min_groups_to_match(groups, pattern);
 
         if (best == -1) {
-            std::cout << "No matching combination for this row\n";
+            // std::cout << "No matching combination for this row\n";
         } else {
-            std::cout << "Minimal groups to match: " << best << "\n";
+            // std::cout << "Minimal groups to match: " << best << "\n";
             acc += best;
         }
     }
@@ -301,11 +301,129 @@ long long solve_part1(const std::vector<std::string> &lines) {
     return acc;
 }
 
+void dfs_presses(const Groups& groups,
+                 const Values& target,
+                 std::size_t gi,          // current group index
+                 Values& accum,           // current accumulated counts
+                 int presses,             // current total presses
+                 int& best)               // best found so far
+{
+    // prune if already worse than best
+    if (presses >= best) {
+        return;
+    }
+
+    const std::size_t G = groups.size();
+
+    // If we've assigned press counts for all groups, check if we matched target
+    if (gi == G) {
+        if (accum == target) {
+            best = presses;
+        }
+        return;
+    }
+
+    const auto& group = groups[gi];
+
+    // First, compute the max times we *could* press this group without
+    // immediately exceeding any target entry.
+    int max_k = 20; // heuristic cap
+    for (std::uint16_t idx : group) {
+        if (idx >= target.size()) {
+            throw std::runtime_error("group index out of bounds in dfs_presses");
+        }
+        const auto remaining = static_cast<int>(target[idx]) - static_cast<int>(accum[idx]);
+        if (remaining < 0) {
+            // Already exceeded target in some dimension earlier; dead branch
+            return;
+        }
+        // Each press adds +1 there, so we can press at most 'remaining' times
+        if (remaining < max_k) {
+            max_k = remaining;
+        }
+    }
+
+    // Try k presses of this group, from 0 up to max_k
+    // k = 0 means skip this group entirely
+    for (int k = 0; k <= max_k; ++k) {
+        if (k > 0) {
+            // Apply one more press of this group (we build up incrementally)
+            for (std::uint16_t idx : group) {
+                accum[idx] = static_cast<std::uint16_t>(accum[idx] + 1);
+            }
+            ++presses;
+        }
+
+        // Recurse to next group
+        dfs_presses(groups, target, gi + 1, accum, presses, best);
+    }
+
+    // Backtrack accum to original state
+    for (int k = 0; k < max_k; ++k) {
+        // we pressed this group k times more than original (due to the loop),
+        // so subtract k from all its indices
+        for (std::uint16_t idx : group) {
+            accum[idx] = static_cast<std::uint16_t>(accum[idx] - 1);
+        }
+        --presses;
+    }
+}
+
+int min_presses_to_match_values(const Groups& groups,
+                                const Values& target)
+{
+    const std::size_t G = groups.size();
+
+    if (G == 0) {
+        // Only valid if target is all zeros
+        bool all_zero = true;
+        for (auto v : target) {
+            if (v != 0) {
+                all_zero = false;
+                break;
+            }
+        }
+        return all_zero ? 0 : -1;
+    }
+
+    // initial accum = all zeros
+    Values accum(target.size(), static_cast<std::uint16_t>(0));
+    int best = std::numeric_limits<int>::max();
+
+    dfs_presses(groups, target, 0, accum, 0, best);
+
+    if (best == std::numeric_limits<int>::max()) {
+        throw std::runtime_error("No solution found - increase heuristic");
+    }
+    return best;
+}
+
 long long solve_part2(const std::vector<std::string> &lines) {
     long long acc{0};
-    for (const auto &line : lines) {
-        acc += static_cast<long long>(line.size()) * 2;
+
+    for (const auto& line : lines) {
+        if (line.empty()) {
+            continue;
+        }
+
+        Row row = parse_line(line);
+        std::cout << row << "\n";
+
+        const auto& groups = row.groups;
+        const auto& target = row.values;  // part 2 uses values as target
+
+        int best = min_presses_to_match_values(groups, target);
+
+        if (best == -1) {
+            std::cout << "No matching combination (within heuristic) for this row\n";
+            // Depending on what you want:
+            // either ignore, or throw, or treat as large cost.
+        } else {
+            std::cout << "Minimal presses for values: " << best << "\n";
+            acc += best;
+        }
     }
+
     return acc;
 }
 
