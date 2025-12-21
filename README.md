@@ -1,6 +1,6 @@
 # Advent of Code 2025 – Modern C++ Solutions
 
-Tackling the 2025 Advent of Code puzzles as daily algorithm katas. The goal is to sharpen data structure and problem-solving skills in C++ while keeping each solution efficient—treating the challenges like a stream of LeetCode problems.
+Tackling the 2025 Advent of Code puzzles as daily algorithm flex. The goal is to sharpen data structure and problem-solving skills in C++ while keeping each solution efficient—treating the challenges like a stream of LeetCode problems.
 
 ## Objectives
 - Build fast, readable solutions in ISO C++23 with a focus on algorithmic rigor.
@@ -28,6 +28,7 @@ Tackling the 2025 Advent of Code puzzles as daily algorithm katas. The goal is t
 | 9 | Polygones | How to check if a coordinate is inside a polygon - check the edges |
 | 10 | Just use a math solver | I could brute force part 1, but this is a just a linear equation |
 | 11 | Find all the ways | Nothing like memoizing to get away with it (not that fun in cpp) |
+| 12 | This could have been hard | Delayed solving this one because I thought I needed an extreme complex algorithm, but at the end, the input was super easy so a easy check was enough |
 
 ## Build & Run
 Prerequisites: CMake ≥ 3.16 and a C++23 compiler (tested with both Clang and GCC).
